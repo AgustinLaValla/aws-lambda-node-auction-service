@@ -1,10 +1,7 @@
 const { DynamoDB } = require("aws-sdk");
-const middy = require("@middy/core");
-const httpJsonBodyParser = require("@middy/http-json-body-parser");
 const { v4: uuid } = require("uuid");
-const httpEventNormalizer = require("@middy/http-event-normalizer");
-const httpErrorHanlder = require("@middy/http-error-handler");
 const createError = require("http-errors");
+const { commonMiddleware } = require("./lib/commonMiddleware");
 
 const createAuction = async (event) => {
   const { title } = event.body;
@@ -16,7 +13,6 @@ const createAuction = async (event) => {
   };
 
   const db = new DynamoDB.DocumentClient();
-  
 
   try {
     await db
@@ -37,8 +33,5 @@ const createAuction = async (event) => {
 };
 
 module.exports = {
-  createAuction: middy(createAuction)
-    .use(httpJsonBodyParser())
-    .use(httpEventNormalizer()) //adjust the API gateway event object to prevent accidentally having nonexisting objects
-    .use(httpErrorHanlder()) // Allows to make handler process smooth and clean,
+  createAuction: commonMiddleware(createAuction),
 };

@@ -1,9 +1,6 @@
 const { DynamoDB } = require("aws-sdk");
-const middy = require("@middy/core");
-const httpJsonBodyParser = require("@middy/http-json-body-parser");
-const httpEventNormalizer = require("@middy/http-event-normalizer");
-const httpErrorHanlder = require("@middy/http-error-handler");
 const createError = require("http-errors");
+const { commonMiddleware } = require("./lib/commonMiddleware");
 
 const getAuctionById = async (event) => {
   const { id } = event.pathParameters;
@@ -20,16 +17,14 @@ const getAuctionById = async (event) => {
       })
       .promise();
 
-      auction = Item;
-
+    auction = Item;
   } catch (error) {
     console.log(error);
     throw new createError.InternalServerError(error);
-
   }
 
   if (!auction)
-  throw new createError.NotFound(`Auction with ID "${id}" not found!`);
+    throw new createError.NotFound(`Auction with ID "${id}" not found!`);
 
   return {
     status: 200,
@@ -38,8 +33,5 @@ const getAuctionById = async (event) => {
 };
 
 module.exports = {
-  getAuctionById: middy(getAuctionById)
-    .use(httpJsonBodyParser())
-    .use(httpEventNormalizer())
-    .use(httpErrorHanlder()),
+  getAuctionById: commonMiddleware(getAuctionById),
 };
