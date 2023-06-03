@@ -1,0 +1,17 @@
+{
+  "name": "auctions-aws-service",
+  "version": "1.0.0",
+  "description": "Serverless service to handle auctions",
+  "main": "index.js",
+  "dependencies": {
+    "@middy/core": "^4.5.0",
+    "@middy/event-normalizer": "^4.5.0",
+    "@middy/http-error-handler": "^4.5.0",
+    "@middy/http-json-body-parser": "^4.5.0",
+    "aws-sdk": "^2.1389.0",
+    "http-errors": "^2.0.0",
+    "uuid": "^9.0.0"
+  },
+  "author": "Agustin La Valla",
+  "license": "ISC"
+}

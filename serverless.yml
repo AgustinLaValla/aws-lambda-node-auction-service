@@ -1,0 +1,29 @@
+service: auctions-aws-service
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  environment:
+    AUCTION_TABLE_NAME: ${self:custom.AuctionTable.name}
+  iamRoleStatements:
+    - ${file(aws_config/iam/AuctionTableIAM.yml):AuctionTableIAM}
+
+functions:
+  createAuction:
+    handler: src/auctions/createAuction.createAuction
+    events:
+      - httpApi:
+          path: /auctions
+          method: POST
+
+resources:
+  Resources:
+    AuctionTable: ${file(aws_config/resources/AuctionTable.yml):AuctionTable}
+
+custom:
+  AuctionTable:
+    name: !Ref AuctionTable
+    arn: !GetAtt AuctionTable.Arn
