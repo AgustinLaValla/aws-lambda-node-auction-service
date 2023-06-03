@@ -25,13 +25,20 @@ functions:
       - httpApi:
           path: /auctions
           method: GET
-  
+
   getAuctionById:
     handler: src/auctions/getAuctionById.getAuctionById
     events:
       - httpApi:
           path: /auctions/{id}
           method: GET
+
+  placePid:
+    handler: src/auctions/placePid.placePid
+    events:
+      - httpApi:
+          path: /auctions/{id}
+          method: PATCH
 
 resources:
   Resources:

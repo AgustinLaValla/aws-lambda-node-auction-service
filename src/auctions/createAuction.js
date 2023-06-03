@@ -10,6 +10,9 @@ const createAuction = async (event) => {
     title,
     status: "OPEN",
     createdAt: new Date().toISOString(),
+    highestBid: {
+      amount: 0,
+    },
   };
 
   const db = new DynamoDB.DocumentClient();
