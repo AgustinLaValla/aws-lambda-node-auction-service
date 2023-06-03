@@ -2,12 +2,9 @@ const { DynamoDB } = require("aws-sdk");
 const createError = require("http-errors");
 const { commonMiddleware } = require("./lib/commonMiddleware");
 
-const getAuctionById = async (event) => {
-  const { id } = event.pathParameters;
-
-  const db = new DynamoDB.DocumentClient();
-
+const getAuction = async (id) => {
   let auction;
+  const db = new DynamoDB.DocumentClient();
 
   try {
     const { Item } = await db
@@ -26,6 +23,14 @@ const getAuctionById = async (event) => {
   if (!auction)
     throw new createError.NotFound(`Auction with ID "${id}" not found!`);
 
+  return auction;
+};
+
+const getAuctionById = async (event) => {
+  const { id } = event.pathParameters;
+
+  const auction = await getAuction(id);
+
   return {
     status: 200,
     auction,
@@ -34,4 +39,5 @@ const getAuctionById = async (event) => {
 
 module.exports = {
   getAuctionById: commonMiddleware(getAuctionById),
+  getAuction,
 };

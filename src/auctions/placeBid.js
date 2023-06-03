@@ -1,14 +1,22 @@
 const { DynamoDB } = require("aws-sdk");
 const createError = require("http-errors");
 const { commonMiddleware } = require("./lib/commonMiddleware");
+const { getAuction } = require("./getAuctionById");
 
 const handler = async (event) => {
   const { id } = event.pathParameters;
   const { amount } = event.body;
 
   const db = new DynamoDB.DocumentClient();
-
   let updatedAuction;
+
+  const auction = await getAuction(id);
+  const auctionAmount = auction.highestBid.amount;
+
+  if (amount <= auctionAmount)
+    throw new createError.Forbidden(
+      `Your bid amount should be higher than ${auctionAmount}`
+    );
 
   try {
     const { Attributes } = await db
@@ -34,4 +42,4 @@ const handler = async (event) => {
   };
 };
 
-module.exports = { placePid: commonMiddleware(handler) };
+module.exports = { placeBid: commonMiddleware(handler) };

@@ -33,8 +33,8 @@ functions:
           path: /auctions/{id}
           method: GET
 
-  placePid:
-    handler: src/auctions/placePid.placePid
+  placeBid:
+    handler: src/auctions/placeBid.placeBid
     events:
       - httpApi:
           path: /auctions/{id}
