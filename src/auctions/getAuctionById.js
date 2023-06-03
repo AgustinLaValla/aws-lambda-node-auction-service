@@ -1,44 +1,45 @@
 const { DynamoDB } = require("aws-sdk");
 const middy = require("@middy/core");
 const httpJsonBodyParser = require("@middy/http-json-body-parser");
-const { v4: uuid } = require("uuid");
 const httpEventNormalizer = require("@middy/http-event-normalizer");
 const httpErrorHanlder = require("@middy/http-error-handler");
 const createError = require("http-errors");
 
-const createAuction = async (event) => {
-  const { title } = event.body;
-  const auction = {
-    id: uuid(),
-    title,
-    status: "OPEN",
-    createdAt: new Date().toISOString(),
-  };
+const getAuctionById = async (event) => {
+  const { id } = event.pathParameters;
 
   const db = new DynamoDB.DocumentClient();
-  
+
+  let auction;
 
   try {
-    await db
-      .put({
+    const { Item } = await db
+      .get({
         TableName: process.env.AUCTION_TABLE_NAME,
-        Item: auction,
+        Key: { id },
       })
       .promise();
+
+      auction = Item;
+
   } catch (error) {
     console.log(error);
-    throw new createError.NotFound(error);
+    throw new createError.InternalServerError(error);
+
   }
 
+  if (!auction)
+  throw new createError.NotFound(`Auction with ID "${id}" not found!`);
+
   return {
-    status: 201,
+    status: 200,
     auction,
   };
 };
 
 module.exports = {
-  createAuction: middy(createAuction)
+  getAuctionById: middy(getAuctionById)
     .use(httpJsonBodyParser())
-    .use(httpEventNormalizer()) //adjust the API gateway event object to prevent accidentally having nonexisting objects
-    .use(httpErrorHanlder()) // Allows to make handler process smooth and clean,
+    .use(httpEventNormalizer())
+    .use(httpErrorHanlder()),
 };

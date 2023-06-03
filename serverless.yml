@@ -19,6 +19,20 @@ functions:
           path: /auctions
           method: POST
 
+  getAuctions:
+    handler: src/auctions/getAuctions.getAuctions
+    events:
+      - httpApi:
+          path: /auctions
+          method: GET
+  
+  getAuctionById:
+    handler: src/auctions/getAuctionById.getAuctionById
+    events:
+      - httpApi:
+          path: /auctions/{id}
+          method: GET
+
 resources:
   Resources:
     AuctionTable: ${file(aws_config/resources/AuctionTable.yml):AuctionTable}

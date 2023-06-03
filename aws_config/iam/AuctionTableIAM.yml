@@ -2,6 +2,7 @@ AuctionTableIAM:
   Effect: Allow
   Action:
     - dynamodb:Scan
+    - dynamodb:GetItem
     - dynamodb:PutItem
     - dynamodb:DeleteItem
   Resource:
